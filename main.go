@@ -13,6 +13,7 @@ import (
 )
 
 var (
+	prefix           = flag.String("prefix", "", "function prefix")
 	signature        = flag.String("selector", "", "selector given")
 	mustBeZeros      = flag.Bool("all_zeros", false, "force search for zeros")
 	found       bool = false
@@ -62,6 +63,7 @@ func main() {
 	}
 
 	sig := *signature
+	funcPrefix := *prefix
 
 	atMost := []byte{0x00, 0x00, 0x00, 0xff}
 	wanted := []byte{0x00, 0x00, 0x00, 0x00}
@@ -83,7 +85,7 @@ func main() {
 		subrange := all[i*chopped : i*chopped+chopped]
 		go func() {
 			for _, a := range subrange {
-				combined := string(a) + "(" + sig + ")"
+				combined := string(funcPrefix) + string(a) + "(" + sig + ")"
 				b := crypto.Keccak256([]byte(combined))[:4]
 
 				if bytes.Equal(wanted, b) {
